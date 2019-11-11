@@ -7,6 +7,7 @@
     "@types/node": "12.12.7",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
+    "@types/webpack-env": "^1.14.1",
     "eslint-plugin-react": "^7.16.0",
     "node-sass": "^4.13.0",
     "react": "^16.11.0",
@@ -49,6 +50,7 @@
     "stylelint-config-rational-order": "^0.1.2",
     "stylelint-config-recommended-scss": "^4.0.0",
     "stylelint-order": "^3.1.1",
+    "stylelint-prettier": "^1.1.1",
     "stylelint-scss": "^3.12.1"
   }
 }
