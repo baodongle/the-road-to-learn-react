@@ -1,7 +1,16 @@
 import React, {Component, ReactNode} from 'react';
 import './App.scss';
 
-const list = [
+interface Item {
+  title: string;
+  url: string;
+  author: string;
+  numComments: number;
+  points: number;
+  objectID: number;
+}
+
+const list: Item[] = [
   {
     title: 'React',
     url: 'https://reactjs.org/',
@@ -24,18 +33,16 @@ class App extends Component {
   render(): ReactNode {
     return (
       <div className="App">
-        {list.map(function(item) {
-          return (
-            <div key={item.objectID}>
-              <span>
-                <a href={item.url}>{item.title}</a>
-              </span>
-              <span>{item.author}</span>
-              <span>{item.numComments}</span>
-              <span>{item.points}</span>
-            </div>
-          );
-        })}
+        {list.map((item: Item) => (
+          <div key={item.objectID}>
+            <span>
+              <a href={item.url}>{item.title}</a>
+            </span>
+            <span>{item.author}</span>
+            <span>{item.numComments}</span>
+            <span>{item.points}</span>
+          </div>
+        ))}
       </div>
     );
   }
