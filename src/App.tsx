@@ -37,7 +37,7 @@ class App extends Component<{}, States> {
   constructor(props: Readonly<{}>) {
     super(props);
     this.state = {
-      list: list,
+      list,
     };
   }
 
