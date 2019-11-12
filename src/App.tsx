@@ -36,9 +36,17 @@ const list: Item[] = [
 class App extends Component<{}, States> {
   constructor(props: Readonly<{}>) {
     super(props);
+
     this.state = {
       list,
     };
+
+    this.onDismiss = this.onDismiss.bind(this);
+  }
+
+  onDismiss(id: number): void {
+    const updatedList = this.state.list.filter((item: Item) => item.objectID !== id);
+    this.setState({list: updatedList});
   }
 
   render(): ReactNode {
@@ -52,6 +60,11 @@ class App extends Component<{}, States> {
             <span>{item.author}</span>
             <span>{item.numComments}</span>
             <span>{item.points}</span>
+            <span>
+              <button onClick={() => this.onDismiss(item.objectID)} type="button">
+                Dismiss
+              </button>
+            </span>
           </div>
         ))}
       </div>
