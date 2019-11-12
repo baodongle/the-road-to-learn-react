@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component, ReactNode } from 'react';
+import React, { ChangeEvent, Component, FC, ReactNode } from 'react';
 import './App.scss';
 
 interface Item {
@@ -74,18 +74,14 @@ class App extends Component<{}, AppStates> {
 interface SearchProps {
   value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  children: ReactNode;
 }
 
-class Search extends Component<SearchProps> {
-  public render(): ReactNode {
-    const { value, onChange, children } = this.props;
-    return (
-      <form>
-        {children} <input type="text" value={value} onChange={onChange} />
-      </form>
-    );
-  }
-}
+const Search: FC<SearchProps> = ({ value, onChange, children }: SearchProps) => (
+  <form>
+    {children} <input type="text" value={value} onChange={onChange} />
+  </form>
+);
 
 interface TableProps {
   list: Item[];
@@ -93,43 +89,34 @@ interface TableProps {
   onDismiss: (id: number) => void;
 }
 
-class Table extends Component<TableProps> {
-  public render(): ReactNode {
-    const { list, pattern, onDismiss } = this.props;
-    return (
-      <div>
-        {list.filter(isSearched(pattern)).map((item: Item) => (
-          <div key={item.objectID}>
-            <span>
-              <a href={item.url}>{item.title}</a>
-            </span>
-            <span>{item.author}</span>
-            <span>{item.numComments}</span>
-            <span>{item.points}</span>
-            <span>
-              <Button onClick={() => onDismiss(item.objectID)}>Dismiss</Button>
-            </span>
-          </div>
-        ))}
+const Table: FC<TableProps> = ({ list, pattern, onDismiss }: TableProps) => (
+  <div>
+    {list.filter(isSearched(pattern)).map((item: Item) => (
+      <div key={item.objectID}>
+        <span>
+          <a href={item.url}>{item.title}</a>
+        </span>
+        <span>{item.author}</span>
+        <span>{item.numComments}</span>
+        <span>{item.points}</span>
+        <span>
+          <Button onClick={() => onDismiss(item.objectID)}>Dismiss</Button>
+        </span>
       </div>
-    );
-  }
-}
+    ))}
+  </div>
+);
 
 interface ButtonProps {
   onClick: () => void;
   className?: string;
+  children: ReactNode;
 }
 
-class Button extends Component<ButtonProps> {
-  public render(): ReactNode {
-    const { onClick, className = '', children } = this.props;
-    return (
-      <button onClick={onClick} className={className} type="button">
-        {children}
-      </button>
-    );
-  }
-}
+const Button: FC<ButtonProps> = ({ onClick, className = '', children }: ButtonProps) => (
+  <button onClick={onClick} className={className} type="button">
+    {children}
+  </button>
+);
 
 export default App;
