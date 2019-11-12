@@ -1,4 +1,4 @@
-import React, {Component, ReactNode} from 'react';
+import React, {ChangeEvent, Component, ReactNode} from 'react';
 import './App.scss';
 
 interface Item {
@@ -12,6 +12,7 @@ interface Item {
 
 interface States {
   list: Item[];
+  searchTerm: string;
 }
 
 const list: Item[] = [
@@ -33,15 +34,23 @@ const list: Item[] = [
   },
 ];
 
+const isSearched = (searchTerm: string) => (item: Item) => item.title.toLowerCase().includes(searchTerm.toLowerCase());
+
 class App extends Component<{}, States> {
   constructor(props: Readonly<{}>) {
     super(props);
 
     this.state = {
       list,
+      searchTerm: '',
     };
 
+    this.onSearchChange = this.onSearchChange.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
+  }
+
+  onSearchChange(event: ChangeEvent<HTMLInputElement>) {
+    this.setState({searchTerm: event.target.value});
   }
 
   onDismiss(id: number): void {
@@ -52,7 +61,10 @@ class App extends Component<{}, States> {
   render(): ReactNode {
     return (
       <div className="App">
-        {this.state.list.map((item: Item) => (
+        <form>
+          <input type="text" onChange={this.onSearchChange} />
+        </form>
+        {this.state.list.filter(isSearched(this.state.searchTerm)).map((item: Item) => (
           <div key={item.objectID}>
             <span>
               <a href={item.url}>{item.title}</a>
