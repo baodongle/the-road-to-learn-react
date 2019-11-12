@@ -107,13 +107,27 @@ class Table extends Component<TableProps> {
             <span>{item.numComments}</span>
             <span>{item.points}</span>
             <span>
-              <button onClick={() => onDismiss(item.objectID)} type="button">
-                Dismiss
-              </button>
+              <Button onClick={() => onDismiss(item.objectID)}>Dismiss</Button>
             </span>
           </div>
         ))}
       </div>
+    );
+  }
+}
+
+interface ButtonProps {
+  onClick: () => void;
+  className?: string;
+}
+
+class Button extends Component<ButtonProps> {
+  public render(): ReactNode {
+    const { onClick, className = '', children } = this.props;
+    return (
+      <button onClick={onClick} className={className} type="button">
+        {children}
+      </button>
     );
   }
 }
