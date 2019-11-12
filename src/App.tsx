@@ -50,21 +50,22 @@ class App extends Component<{}, States> {
   }
 
   onSearchChange(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({searchTerm: event.target.value});
+    this.setState({ searchTerm: event.target.value });
   }
 
   onDismiss(id: number): void {
     const updatedList = this.state.list.filter((item: Item) => item.objectID !== id);
-    this.setState({list: updatedList});
+    this.setState({ list: updatedList });
   }
 
   render(): ReactNode {
+    const { searchTerm, list } = this.state;
     return (
       <div className="App">
         <form>
           <input type="text" onChange={this.onSearchChange} />
         </form>
-        {this.state.list.filter(isSearched(this.state.searchTerm)).map((item: Item) => (
+        {list.filter(isSearched(searchTerm)).map((item: Item) => (
           <div key={item.objectID}>
             <span>
               <a href={item.url}>{item.title}</a>
