@@ -1,4 +1,4 @@
-import React, {ChangeEvent, Component, ReactNode} from 'react';
+import React, { ChangeEvent, Component, ReactNode } from 'react';
 import './App.scss';
 
 interface Item {
@@ -10,7 +10,7 @@ interface Item {
   objectID: number;
 }
 
-interface States {
+interface AppStates {
   list: Item[];
   searchTerm: string;
 }
@@ -36,7 +36,7 @@ const list: Item[] = [
 
 const isSearched = (searchTerm: string) => (item: Item) => item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
-class App extends Component<{}, States> {
+class App extends Component<{}, AppStates> {
   constructor(props: Readonly<{}>) {
     super(props);
 
@@ -49,7 +49,7 @@ class App extends Component<{}, States> {
     this.onDismiss = this.onDismiss.bind(this);
   }
 
-  onSearchChange(event: ChangeEvent<HTMLInputElement>) {
+  onSearchChange(event: ChangeEvent<HTMLInputElement>): void {
     this.setState({ searchTerm: event.target.value });
   }
 
@@ -58,14 +58,45 @@ class App extends Component<{}, States> {
     this.setState({ list: updatedList });
   }
 
-  render(): ReactNode {
+  public render(): ReactNode {
     const { searchTerm, list } = this.state;
     return (
       <div className="App">
-        <form>
-          <input type="text" value={searchTerm} onChange={this.onSearchChange} />
-        </form>
-        {list.filter(isSearched(searchTerm)).map((item: Item) => (
+        <Search value={searchTerm} onChange={this.onSearchChange} />
+        <Table list={list} pattern={searchTerm} onDismiss={this.onDismiss} />
+      </div>
+    );
+  }
+}
+
+interface SearchProps {
+  value: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+class Search extends Component<SearchProps> {
+  public render(): ReactNode {
+    const { value, onChange } = this.props;
+    return (
+      <form>
+        <input type="text" value={value} onChange={onChange} />
+      </form>
+    );
+  }
+}
+
+interface TableProps {
+  list: Item[];
+  pattern: string;
+  onDismiss: (id: number) => void;
+}
+
+class Table extends Component<TableProps> {
+  public render(): ReactNode {
+    const { list, pattern, onDismiss } = this.props;
+    return (
+      <div>
+        {list.filter(isSearched(pattern)).map((item: Item) => (
           <div key={item.objectID}>
             <span>
               <a href={item.url}>{item.title}</a>
@@ -74,7 +105,7 @@ class App extends Component<{}, States> {
             <span>{item.numComments}</span>
             <span>{item.points}</span>
             <span>
-              <button onClick={() => this.onDismiss(item.objectID)} type="button">
+              <button onClick={() => onDismiss(item.objectID)} type="button">
                 Dismiss
               </button>
             </span>
