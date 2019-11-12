@@ -10,6 +10,10 @@ interface Item {
   objectID: number;
 }
 
+interface States {
+  list: Item[];
+}
+
 const list: Item[] = [
   {
     title: 'React',
@@ -29,11 +33,18 @@ const list: Item[] = [
   },
 ];
 
-class App extends Component {
+class App extends Component<{}, States> {
+  constructor(props: Readonly<{}>) {
+    super(props);
+    this.state = {
+      list: list,
+    };
+  }
+
   render(): ReactNode {
     return (
       <div className="App">
-        {list.map((item: Item) => (
+        {this.state.list.map((item: Item) => (
           <div key={item.objectID}>
             <span>
               <a href={item.url}>{item.title}</a>
