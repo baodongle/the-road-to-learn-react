@@ -34,6 +34,18 @@ const list: Item[] = [
   },
 ];
 
+const largeColumn = {
+  width: '40%',
+};
+
+const midColumn = {
+  width: '30%',
+};
+
+const smallColumn = {
+  width: '10%',
+};
+
 const isSearched = (searchTerm: string) => (item: Item) => item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
 class App extends Component<{}, AppStates> {
@@ -61,10 +73,12 @@ class App extends Component<{}, AppStates> {
   public render(): ReactNode {
     const { searchTerm, list } = this.state;
     return (
-      <div className="App">
-        <Search value={searchTerm} onChange={this.onSearchChange}>
-          Search
-        </Search>
+      <div className="page">
+        <div className="interactions">
+          <Search value={searchTerm} onChange={this.onSearchChange}>
+            Search
+          </Search>
+        </div>
         <Table list={list} pattern={searchTerm} onDismiss={this.onDismiss} />
       </div>
     );
@@ -90,17 +104,19 @@ interface TableProps {
 }
 
 const Table: FC<TableProps> = ({ list, pattern, onDismiss }: TableProps) => (
-  <div>
+  <div className="table">
     {list.filter(isSearched(pattern)).map((item: Item) => (
-      <div key={item.objectID}>
-        <span>
+      <div key={item.objectID} className="table-row">
+        <span style={largeColumn}>
           <a href={item.url}>{item.title}</a>
         </span>
-        <span>{item.author}</span>
-        <span>{item.numComments}</span>
-        <span>{item.points}</span>
-        <span>
-          <Button onClick={() => onDismiss(item.objectID)}>Dismiss</Button>
+        <span style={midColumn}>{item.author}</span>
+        <span style={smallColumn}>{item.numComments}</span>
+        <span style={smallColumn}>{item.points}</span>
+        <span style={smallColumn}>
+          <Button onClick={() => onDismiss(item.objectID)} className="button-inline">
+            Dismiss
+          </Button>
         </span>
       </div>
     ))}
