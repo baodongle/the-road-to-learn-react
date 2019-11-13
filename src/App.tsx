@@ -36,7 +36,7 @@ const smallColumn = {
   width: '10%',
 };
 
-const isSearched = (searchTerm: string) => (item: Item) => item.title.toLowerCase().includes(searchTerm.toLowerCase());
+const isSearched = (searchTerm: string) => (item: Hit) => item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
 class App extends Component<{}, AppStates> {
   constructor(props: Readonly<{}>) {
@@ -70,8 +70,13 @@ class App extends Component<{}, AppStates> {
   }
 
   onDismiss(id: number): void {
-    const updatedList = this.state.list.filter((item: Item) => item.objectID !== id);
-    this.setState({ list: updatedList });
+    if (this.state.result) {
+      const isNotId = (item: Hit) => item.objectID !== id;
+      const updatedHits = this.state.result.hits.filter(isNotId);
+      this.setState({
+        result: { ...this.state.result, hits: updatedHits },
+      });
+    }
   }
 
   public render(): ReactNode {
@@ -107,20 +112,20 @@ const Search: FC<SearchProps> = ({ value, onChange, children }: SearchProps) => 
 );
 
 interface TableProps {
-  list: Item[];
+  list: Hit[];
   pattern: string;
   onDismiss: (id: number) => void;
 }
 
 const Table: FC<TableProps> = ({ list, pattern, onDismiss }: TableProps) => (
   <div className="table">
-    {list.filter(isSearched(pattern)).map((item: Item) => (
+    {list.filter(isSearched(pattern)).map((item: Hit) => (
       <div key={item.objectID} className="table-row">
         <span style={largeColumn}>
           <a href={item.url}>{item.title}</a>
         </span>
         <span style={midColumn}>{item.author}</span>
-        <span style={smallColumn}>{item.numComments}</span>
+        <span style={smallColumn}>{item.num_comments}</span>
         <span style={smallColumn}>{item.points}</span>
         <span style={smallColumn}>
           <Button onClick={() => onDismiss(item.objectID)} className="button-inline">
