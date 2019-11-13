@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component, FC, ReactNode } from 'react';
+import React, { ChangeEvent, Component, FC, FormEvent, ReactNode } from 'react';
 import './App.scss';
 
 const DEFAULT_QUERY = 'redux';
@@ -36,8 +36,6 @@ const smallColumn = {
   width: '10%',
 };
 
-const isSearched = (searchTerm: string) => (item: Hit) => item.title.toLowerCase().includes(searchTerm.toLowerCase());
-
 class App extends Component<{}, AppStates> {
   constructor(props: Readonly<{}>) {
     super(props);
@@ -48,7 +46,9 @@ class App extends Component<{}, AppStates> {
     };
 
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
+    this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
   }
 
@@ -56,17 +56,26 @@ class App extends Component<{}, AppStates> {
     this.setState({ result });
   }
 
-  public componentDidMount(): void {
-    const { searchTerm } = this.state;
-
+  fetchSearchTopStories(searchTerm: string): void {
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
       .catch(error => error);
   }
 
+  public componentDidMount(): void {
+    const { searchTerm } = this.state;
+    this.fetchSearchTopStories(searchTerm);
+  }
+
   onSearchChange(event: ChangeEvent<HTMLInputElement>): void {
     this.setState({ searchTerm: event.target.value });
+  }
+
+  onSearchSubmit(event: FormEvent<HTMLFormElement>): void {
+    const { searchTerm } = this.state;
+    this.fetchSearchTopStories(searchTerm);
+    event.preventDefault();
   }
 
   onDismiss(id: number): void {
@@ -89,11 +98,11 @@ class App extends Component<{}, AppStates> {
     return (
       <div className="page">
         <div className="interactions">
-          <Search value={searchTerm} onChange={this.onSearchChange}>
+          <Search value={searchTerm} onChange={this.onSearchChange} onSubmit={this.onSearchSubmit}>
             Search
           </Search>
         </div>
-        {result && <Table list={result.hits} pattern={searchTerm} onDismiss={this.onDismiss} />}
+        {result && <Table list={result.hits} onDismiss={this.onDismiss} />}
       </div>
     );
   }
@@ -102,24 +111,25 @@ class App extends Component<{}, AppStates> {
 interface SearchProps {
   value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   children: ReactNode;
 }
 
-const Search: FC<SearchProps> = ({ value, onChange, children }: SearchProps) => (
-  <form>
-    {children} <input type="text" value={value} onChange={onChange} />
+const Search: FC<SearchProps> = ({ value, onChange, onSubmit, children }: SearchProps) => (
+  <form onSubmit={onSubmit}>
+    <input type="text" value={value} onChange={onChange} />
+    <button>{children}</button>
   </form>
 );
 
 interface TableProps {
   list: Hit[];
-  pattern: string;
   onDismiss: (id: number) => void;
 }
 
-const Table: FC<TableProps> = ({ list, pattern, onDismiss }: TableProps) => (
+const Table: FC<TableProps> = ({ list, onDismiss }: TableProps) => (
   <div className="table">
-    {list.filter(isSearched(pattern)).map((item: Hit) => (
+    {list.map((item: Hit) => (
       <div key={item.objectID} className="table-row">
         <span style={largeColumn}>
           <a href={item.url}>{item.title}</a>
