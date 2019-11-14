@@ -1,29 +1,20 @@
 import axios from 'axios';
-import React, { ChangeEvent, Component, FC, FormEvent, ReactNode } from 'react';
+import React, { ChangeEvent, Component, FormEvent, ReactNode } from 'react';
+import {
+  DEFAULT_HPP,
+  DEFAULT_QUERY,
+  PARAM_HPP,
+  PARAM_PAGE,
+  PARAM_SEARCH,
+  PATH_BASE,
+  PATH_SEARCH,
+} from '../../constants';
+import { Hit } from '../../interfaces/hit';
+import { Result } from '../../interfaces/result';
+import { Button } from '../Button';
+import { Search } from '../Search';
+import { Table } from '../Table';
 import './App.scss';
-
-const DEFAULT_QUERY = 'redux';
-const DEFAULT_HPP = '100';
-
-const PATH_BASE = 'https://hn.algolia.com/api/v1';
-const PATH_SEARCH = '/search';
-const PARAM_SEARCH = 'query=';
-const PARAM_PAGE = 'page=';
-const PARAM_HPP = 'hitsPerPage=';
-
-interface Hit {
-  title: string;
-  url: string;
-  author: string;
-  points: number;
-  num_comments: number;
-  objectID: number;
-}
-
-interface Result {
-  hits: Hit[];
-  page: number;
-}
 
 interface AppStates {
   results?: {
@@ -34,18 +25,6 @@ interface AppStates {
   error?: Error;
   page?: number;
 }
-
-const largeColumn = {
-  width: '40%',
-};
-
-const midColumn = {
-  width: '30%',
-};
-
-const smallColumn = {
-  width: '10%',
-};
 
 class App extends Component<{}, AppStates> {
   constructor(props: Readonly<{}>) {
@@ -139,56 +118,5 @@ class App extends Component<{}, AppStates> {
     );
   }
 }
-
-interface SearchProps {
-  value: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  children: ReactNode;
-}
-
-const Search: FC<SearchProps> = ({ value, onChange, onSubmit, children }: SearchProps) => (
-  <form onSubmit={onSubmit}>
-    <input type="text" value={value} onChange={onChange} />
-    <button>{children}</button>
-  </form>
-);
-
-interface TableProps {
-  list: Hit[];
-  onDismiss: (id: number) => void;
-}
-
-const Table: FC<TableProps> = ({ list, onDismiss }: TableProps) => (
-  <div className="table">
-    {list.map((item: Hit) => (
-      <div key={item.objectID} className="table-row">
-        <span style={largeColumn}>
-          <a href={item.url}>{item.title}</a>
-        </span>
-        <span style={midColumn}>{item.author}</span>
-        <span style={smallColumn}>{item.num_comments}</span>
-        <span style={smallColumn}>{item.points}</span>
-        <span style={smallColumn}>
-          <Button onClick={() => onDismiss(item.objectID)} className="button-inline">
-            Dismiss
-          </Button>
-        </span>
-      </div>
-    ))}
-  </div>
-);
-
-interface ButtonProps {
-  onClick: () => void;
-  className?: string;
-  children: ReactNode;
-}
-
-const Button: FC<ButtonProps> = ({ onClick, className = '', children }: ButtonProps) => (
-  <button onClick={onClick} className={className} type="button">
-    {children}
-  </button>
-);
 
 export default App;
