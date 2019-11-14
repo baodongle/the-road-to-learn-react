@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { FC, ReactNode } from 'react';
+import { Loading } from '../Loading';
 
 interface ButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export const Button: FC<ButtonProps> = ({ onClick, className, children }: ButtonProps) => (
@@ -12,6 +13,17 @@ export const Button: FC<ButtonProps> = ({ onClick, className, children }: Button
     {children}
   </button>
 );
+
+interface WithLoadingProps {
+  isLoading: boolean;
+}
+
+const withLoading = <P extends object>(Component: React.ComponentType<P>): FC<P & WithLoadingProps> => ({
+  isLoading,
+  ...rest
+}: WithLoadingProps) => (isLoading ? <Loading /> : <Component {...(rest as P)} />);
+
+export const ButtonWithLoading: React.FunctionComponent<ButtonProps & WithLoadingProps> = withLoading(Button);
 
 Button.propTypes = {
   onClick: PropTypes.func.isRequired,
