@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { FC } from 'react';
 import { Hit } from '../../interfaces/hit';
 import { Button } from '../Button';
@@ -45,3 +46,8 @@ export const Table: FC<TableProps> = ({ list, onDismiss }: TableProps) => (
     ))}
   </div>
 );
+
+Table.propTypes = {
+  list: PropTypes.array.isRequired,
+  onDismiss: PropTypes.func.isRequired,
+};

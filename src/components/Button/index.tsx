@@ -1,13 +1,22 @@
+import PropTypes from 'prop-types';
 import React, { FC, ReactNode } from 'react';
 
 interface ButtonProps {
-  onClick?: () => void;
+  onClick: () => void;
   className?: string;
   children: ReactNode;
 }
 
-export const Button: FC<ButtonProps> = ({ onClick, className = '', children }: ButtonProps) => (
+export const Button: FC<ButtonProps> = ({ onClick, className, children }: ButtonProps) => (
   <button onClick={onClick} className={className} type="button">
     {children}
   </button>
 );
+
+Button.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+};
+
+Button.defaultProps = { className: '' };
