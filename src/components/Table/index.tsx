@@ -16,7 +16,7 @@ const smallColumn = {
 
 interface TableProps {
   list: Hit[];
-  onDismiss: (id: number) => void;
+  onDismiss?: (id?: string) => void;
 }
 
 export const Table: FC<TableProps> = ({ list, onDismiss }: TableProps) => (
@@ -30,7 +30,14 @@ export const Table: FC<TableProps> = ({ list, onDismiss }: TableProps) => (
         <span style={smallColumn}>{item.num_comments}</span>
         <span style={smallColumn}>{item.points}</span>
         <span style={smallColumn}>
-          <Button onClick={() => onDismiss(item.objectID)} className="button-inline">
+          <Button
+            onClick={() => {
+              if (onDismiss) {
+                onDismiss(item.objectID);
+              }
+            }}
+            className="button-inline"
+          >
             Dismiss
           </Button>
         </span>

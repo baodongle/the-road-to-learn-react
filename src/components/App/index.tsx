@@ -80,7 +80,7 @@ class App extends Component<{}, AppStates> {
     event.preventDefault();
   }
 
-  onDismiss(id: number): void {
+  onDismiss(id?: string): void {
     const { searchKey, results } = this.state;
     if (results) {
       const { hits, page } = results[searchKey];

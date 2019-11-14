@@ -1,9 +1,9 @@
 import React, { ChangeEvent, FC, FormEvent, ReactNode } from 'react';
 
 interface SearchProps {
-  value: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  value?: string;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
   children: ReactNode;
 }
 

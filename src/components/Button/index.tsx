@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 
 interface ButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   className?: string;
   children: ReactNode;
 }
