@@ -12,6 +12,7 @@ import {
 import { Hit } from '../../interfaces/hit';
 import { Result } from '../../interfaces/result';
 import { Button } from '../Button';
+import { Loading } from '../Loading';
 import { Search } from '../Search';
 import { Table } from '../Table';
 import './App.scss';
@@ -24,6 +25,7 @@ interface AppStates {
   searchTerm: string;
   error?: Error;
   page?: number;
+  isLoading: boolean;
 }
 
 class App extends Component<{}, AppStates> {
@@ -33,6 +35,7 @@ class App extends Component<{}, AppStates> {
     this.state = {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      isLoading: false,
     };
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -52,10 +55,12 @@ class App extends Component<{}, AppStates> {
     const { searchKey, results } = this.state;
     const oldHits = results && results[searchKey] ? results[searchKey].hits : [];
     const updatedHits = [...oldHits, ...hits];
-    this.setState({ results: { ...results, [searchKey]: { hits: updatedHits, page } } });
+    this.setState({ results: { ...results, [searchKey]: { hits: updatedHits, page } }, isLoading: false });
   }
 
   fetchSearchTopStories(searchTerm: string, page = 0): void {
+    this.setState({ isLoading: true });
+
     axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(result => this.setSearchTopStories(result.data))
       .catch(error => this.setState({ error }));
@@ -93,7 +98,7 @@ class App extends Component<{}, AppStates> {
   }
 
   public render(): ReactNode {
-    const { searchTerm, results, searchKey, error } = this.state;
+    const { searchTerm, results, searchKey, error, isLoading } = this.state;
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
@@ -112,7 +117,11 @@ class App extends Component<{}, AppStates> {
           <Table list={list} onDismiss={this.onDismiss} />
         )}
         <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>More</Button>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>More</Button>
+          )}
         </div>
       </div>
     );
