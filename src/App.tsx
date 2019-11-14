@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { ChangeEvent, Component, FC, FormEvent, ReactNode } from 'react';
 import './App.scss';
 
@@ -76,9 +77,8 @@ class App extends Component<{}, AppStates> {
   }
 
   fetchSearchTopStories(searchTerm: string, page = 0): void {
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
-      .then(response => response.json())
-      .then(result => this.setSearchTopStories(result))
+    axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
+      .then(result => this.setSearchTopStories(result.data))
       .catch(error => this.setState({ error }));
   }
 
