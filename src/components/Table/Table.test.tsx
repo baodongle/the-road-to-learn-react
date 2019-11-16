@@ -3,7 +3,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import { Table } from './index';
+import Table from './index';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -19,17 +19,17 @@ describe('Table', () => {
 
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Table onSort={() => {}} onDismiss={() => {}} {...props} />, div);
+    ReactDOM.render(<Table onDismiss={() => {}} {...props} />, div);
   });
 
   test('has a valid snapshot', () => {
-    const component = renderer.create(<Table onSort={() => {}} onDismiss={() => {}} {...props} />);
+    const component = renderer.create(<Table onDismiss={() => {}} {...props} />);
     const tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
 
   it('shows two items in list', () => {
-    const element = shallow(<Table onSort={() => {}} onDismiss={() => {}} {...props} />);
+    const element = shallow(<Table onDismiss={() => {}} {...props} />);
     expect(element.find('.table-row').length).toBe(2);
   });
 });

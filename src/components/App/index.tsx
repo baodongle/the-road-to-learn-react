@@ -27,6 +27,13 @@ interface AppStates {
   isLoading: boolean;
 }
 
+const updateSearchTopStoriesState = (hits: Hit[], page: number) => (prevState: AppStates) => {
+  const { searchKey, results } = prevState;
+  const oldHits = results && results[searchKey] ? results[searchKey].hits : [];
+  const updatedHits = [...oldHits, ...hits];
+  return { results: { ...results, [searchKey]: { hits: updatedHits, page } }, isLoading: false };
+};
+
 class App extends Component<{}, AppStates> {
   constructor(props: Readonly<{}>) {
     super(props);
@@ -51,10 +58,8 @@ class App extends Component<{}, AppStates> {
 
   setSearchTopStories(result: Result): void {
     const { hits, page } = result;
-    const { searchKey, results } = this.state;
-    const oldHits = results && results[searchKey] ? results[searchKey].hits : [];
-    const updatedHits = [...oldHits, ...hits];
-    this.setState({ results: { ...results, [searchKey]: { hits: updatedHits, page } }, isLoading: false });
+
+    this.setState(updateSearchTopStoriesState(hits, page));
   }
 
   fetchSearchTopStories(searchTerm: string, page = 0): void {
