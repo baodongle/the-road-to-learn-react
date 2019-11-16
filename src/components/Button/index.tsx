@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { FC, ReactNode } from 'react';
 import { Loading } from '../Loading';
+import './Button.scss';
 
 interface ButtonProps {
   onClick?: () => void;

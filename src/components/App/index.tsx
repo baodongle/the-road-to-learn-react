@@ -25,6 +25,8 @@ interface AppStates {
   error?: Error;
   page?: number;
   isLoading: boolean;
+  sortKey: string;
+  isSortReverse: boolean;
 }
 
 class App extends Component<{}, AppStates> {
@@ -35,6 +37,8 @@ class App extends Component<{}, AppStates> {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       isLoading: false,
+      sortKey: 'NONE',
+      isSortReverse: false,
     };
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -43,6 +47,7 @@ class App extends Component<{}, AppStates> {
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
+    this.onSort = this.onSort.bind(this);
   }
 
   needsToSearchTopStories(searchTerm: string): boolean {
@@ -96,8 +101,13 @@ class App extends Component<{}, AppStates> {
     }
   }
 
+  onSort(sortKey: string): void {
+    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
+    this.setState({ sortKey, isSortReverse });
+  }
+
   public render(): ReactNode {
-    const { searchTerm, results, searchKey, error, isLoading } = this.state;
+    const { searchTerm, results, searchKey, error, isLoading, sortKey, isSortReverse } = this.state;
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
@@ -113,7 +123,13 @@ class App extends Component<{}, AppStates> {
             <p>Something went wrong.</p>
           </div>
         ) : (
-          <Table list={list} onDismiss={this.onDismiss} />
+          <Table
+            list={list}
+            sortKey={sortKey}
+            isSortReverse={isSortReverse}
+            onSort={this.onSort}
+            onDismiss={this.onDismiss}
+          />
         )}
         <div className="interactions">
           <ButtonWithLoading isLoading={isLoading} onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
