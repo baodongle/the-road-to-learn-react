@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { FC } from 'react';
+import React, { Component, ReactNode } from 'react';
 import { SORTS } from '../../constants';
 import { Hit } from '../../interfaces/hit';
 import { Button } from '../Button';
@@ -20,71 +20,91 @@ const smallColumn = {
 
 interface TableProps {
   list: Hit[];
-  sortKey: string;
-  isSortReverse: boolean;
-  onSort: (sortKey: string) => void;
   onDismiss: (id?: string) => void;
 }
 
-export const Table: FC<TableProps> = ({ list, sortKey, isSortReverse, onSort, onDismiss }: TableProps) => {
-  const sortedList = SORTS[sortKey](list);
-  const reverseSortedList = isSortReverse ? sortedList.reverse() : sortedList;
+interface TableState {
+  sortKey: string;
+  isSortReverse: boolean;
+}
 
-  return (
-    <div className="table">
-      <div className="table-header">
-        <span style={largeColumn}>
-          <Sort sortKey={'TITLE'} onSort={onSort} activeSortKey={sortKey}>
-            Title
-          </Sort>
-        </span>
-        <span style={midColumn}>
-          <Sort sortKey={'AUTHOR'} onSort={onSort} activeSortKey={sortKey}>
-            Author
-          </Sort>
-        </span>
-        <span style={smallColumn}>
-          <Sort sortKey={'COMMENTS'} onSort={onSort} activeSortKey={sortKey}>
-            Comments
-          </Sort>
-        </span>
-        <span style={smallColumn}>
-          <Sort sortKey={'POINTS'} onSort={onSort} activeSortKey={sortKey}>
-            Points
-          </Sort>
-        </span>
-        <span style={smallColumn}>Archive</span>
-      </div>
-      {reverseSortedList.map((item: Hit) => (
-        <div key={item.objectID} className="table-row">
+class Table extends Component<TableProps, TableState> {
+  constructor(props: Readonly<TableProps>) {
+    super(props);
+    this.state = {
+      sortKey: 'NONE',
+      isSortReverse: false,
+    };
+
+    this.onSort = this.onSort.bind(this);
+  }
+
+  onSort(sortKey: string): void {
+    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
+    this.setState({ sortKey, isSortReverse });
+  }
+
+  static propTypes = {
+    list: PropTypes.array.isRequired,
+    onDismiss: PropTypes.func.isRequired,
+  };
+
+  public render(): ReactNode {
+    const { list, onDismiss } = this.props;
+    const { sortKey, isSortReverse } = this.state;
+    const sortedList = SORTS[sortKey](list);
+    const reverseSortedList = isSortReverse ? sortedList.reverse() : sortedList;
+
+    return (
+      <div className="table">
+        <div className="table-header">
           <span style={largeColumn}>
-            <a href={item.url}>{item.title}</a>
+            <Sort sortKey={'TITLE'} onSort={this.onSort} activeSortKey={sortKey}>
+              Title
+            </Sort>
           </span>
-          <span style={midColumn}>{item.author}</span>
-          <span style={smallColumn}>{item.num_comments}</span>
-          <span style={smallColumn}>{item.points}</span>
+          <span style={midColumn}>
+            <Sort sortKey={'AUTHOR'} onSort={this.onSort} activeSortKey={sortKey}>
+              Author
+            </Sort>
+          </span>
           <span style={smallColumn}>
-            <Button
-              onClick={() => {
-                if (onDismiss) {
-                  onDismiss(item.objectID);
-                }
-              }}
-              className="button-inline"
-            >
-              Dismiss
-            </Button>
+            <Sort sortKey={'COMMENTS'} onSort={this.onSort} activeSortKey={sortKey}>
+              Comments
+            </Sort>
           </span>
+          <span style={smallColumn}>
+            <Sort sortKey={'POINTS'} onSort={this.onSort} activeSortKey={sortKey}>
+              Points
+            </Sort>
+          </span>
+          <span style={smallColumn}>Archive</span>
         </div>
-      ))}
-    </div>
-  );
-};
+        {reverseSortedList.map((item: Hit) => (
+          <div key={item.objectID} className="table-row">
+            <span style={largeColumn}>
+              <a href={item.url}>{item.title}</a>
+            </span>
+            <span style={midColumn}>{item.author}</span>
+            <span style={smallColumn}>{item.num_comments}</span>
+            <span style={smallColumn}>{item.points}</span>
+            <span style={smallColumn}>
+              <Button
+                onClick={() => {
+                  if (onDismiss) {
+                    onDismiss(item.objectID);
+                  }
+                }}
+                className="button-inline"
+              >
+                Dismiss
+              </Button>
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+}
 
-Table.propTypes = {
-  list: PropTypes.array.isRequired,
-  sortKey: PropTypes.string.isRequired,
-  isSortReverse: PropTypes.bool.isRequired,
-  onSort: PropTypes.func.isRequired,
-  onDismiss: PropTypes.func.isRequired,
-};
+export default Table;
